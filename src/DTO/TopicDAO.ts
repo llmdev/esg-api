@@ -11,7 +11,7 @@ export default class TopicDAO {
             const dbTopic = await this.connection.one('INSERT INTO topics(title, content, category, user_id) VALUES(${title}, ${content}, ${category}, ${userId}) RETURNING *', {
                 title: topic.title,
                 content: topic.content,
-                category: topic.category,
+                category: topic.category.id,
                 userId: topic.user.id
             });
             return dbTopic;
