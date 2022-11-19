@@ -1,5 +1,5 @@
 import User from "../entities/User";
-import pgp from 'pg-promise';
+import pgp from "pg-promise";
 import pg from "pg-promise/typescript/pg-subset";
 import UserError from "../entities/errors/User";
 import md5 from "md5";
@@ -12,7 +12,7 @@ interface IUserDTO {
     password: string;
 }
 
-export default class UserDTO {
+export default class UserDAO {
 
     constructor(private connection: pgp.IDatabase<{}, pg.IClient>) {}
 
@@ -41,5 +41,19 @@ export default class UserDTO {
         } catch (error) {
             throw new UserError('Usuario nao encontrado')
         }
+    }
+
+    async findWithToken(token: string): Promise<boolean> {
+      const convertedTokenEmail = md5(token);
+      try {
+          await this.connection.one('SELECT * FROM users WHERE email = ${email}', {
+              email: convertedTokenEmail
+          });
+
+          return true
+      } catch(e) {
+          return false
+      }
+
     }
 }

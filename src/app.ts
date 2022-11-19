@@ -4,7 +4,9 @@ import midlewares from './config/midlewares';
 import User from './entities/User';
 import UserError from './entities/errors/User';
 import pgp from 'pg-promise';
-import UserDTO from './DTO/User';
+import UserDAO from './DTO/UserDAO';
+import TopicController from './controller/TopicController';
+import md5 from 'md5';
 
 dotenv.config()
 
@@ -21,13 +23,12 @@ const dbSettings = {
     max: 30
 };
 
-
 app.post('/signin', async (req, res) => {
     const dbConnection = pgp()(dbSettings);
     const { nickname, name, email, password } = req.body;
     try {
         const newUser = new User(nickname, name, email, password);
-        const userDTO = new UserDTO(dbConnection);
+        const userDTO = new UserDAO(dbConnection);
         const dbUser = await userDTO.save(newUser)
         res.json({
             message: 'Novo usuario cadastrado com sucesso!!',
@@ -37,7 +38,6 @@ app.post('/signin', async (req, res) => {
                 name: dbUser.name
             }
         })
-    
     } catch (error) {
         if (error instanceof UserError) {
             res.statusCode = 400;
@@ -53,8 +53,8 @@ app.post('/login', async (req, res) => {
     const dbConnection = pgp()(dbSettings);
     const { email, password } = req.body;
     try {
-        const userDTO = new UserDTO(dbConnection);
-        const findedUser = await userDTO.find(email, password);
+        const userDAO = new UserDAO(dbConnection);
+        const findedUser = await userDAO.find(email, password);
         return res.json({
             message: 'Usuario encontrado',
             user: {
@@ -62,6 +62,7 @@ app.post('/login', async (req, res) => {
                 nickname: findedUser.email,
                 name: findedUser.name,
                 email: findedUser.email,
+                token: md5(findedUser.email)
             }
         });
     } catch (error) {
@@ -75,6 +76,10 @@ app.post('/login', async (req, res) => {
     dbConnection.$pool.end;
 })
 
+
+const topicController = new TopicController();
+
+app.post('/topic', topicController.createTopic);
 
 app.listen(process.env.PORT, () => {
     console.log(`Server listen on port ${process.env.PORT} 👌👌!`);
