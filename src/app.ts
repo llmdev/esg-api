@@ -1,12 +1,13 @@
-import express from 'express'
+import express, { Request, Response, NextFunction}from 'express'
 import dotenv from 'dotenv'
-import midlewares from './config/midlewares';
+import midlewares, { authMidleware } from './config/midlewares';
 import User from './entities/User';
 import UserError from './entities/errors/User';
 import pgp from 'pg-promise';
 import UserDAO from './DTO/UserDAO';
 import TopicController from './controller/TopicController';
-import md5 from 'md5';
+import CryptoJS from 'crypto-js';
+
 
 dotenv.config()
 
@@ -23,8 +24,9 @@ const dbSettings = {
     max: 30
 };
 
+const dbConnection = pgp()(dbSettings);
+
 app.post('/signin', async (req, res) => {
-    const dbConnection = pgp()(dbSettings);
     const { nickname, name, email, password } = req.body;
     try {
         const newUser = new User(nickname, name, email, password);
@@ -46,11 +48,9 @@ app.post('/signin', async (req, res) => {
             })
         }
     } 
-    dbConnection.$pool.end;
 });
 
-app.post('/login', async (req, res) => {
-    const dbConnection = pgp()(dbSettings);
+app.post('/login', authMidleware, async (req, res) => {
     const { email, password } = req.body;
     try {
         const userDAO = new UserDAO(dbConnection);
@@ -62,7 +62,7 @@ app.post('/login', async (req, res) => {
                 nickname: findedUser.email,
                 name: findedUser.name,
                 email: findedUser.email,
-                token: md5(findedUser.email)
+                token: CryptoJS.AES.encrypt(findedUser.email, "esgplatform").toString()
             }
         });
     } catch (error) {
@@ -76,11 +76,11 @@ app.post('/login', async (req, res) => {
     dbConnection.$pool.end;
 })
 
-
-const topicController = new TopicController();
-
-app.post('/topic', topicController.createTopic);
+const topicController = new TopicController(dbConnection);
+app.post('/topic', authMidleware, (req, res) => topicController.createTopic(req, res));
 
 app.listen(process.env.PORT, () => {
     console.log(`Server listen on port ${process.env.PORT} 👌👌!`);
 });
+
+

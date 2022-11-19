@@ -3,8 +3,9 @@ import pgp from "pg-promise";
 import pg from "pg-promise/typescript/pg-subset";
 import UserError from "../entities/errors/User";
 import md5 from "md5";
+import CryptoJS from 'crypto-js';
 
-interface IUserDTO {
+export interface IUserDTO {
     id: number;
     name: string;
     nickname: string;
@@ -36,24 +37,24 @@ export default class UserDAO {
             const user = await this.connection.one('SELECT * FROM users WHERE email = ${email} AND password = ${password}', {
                 email,
                 password: md5Password
-            })
+            });
             return user;
         } catch (error) {
             throw new UserError('Usuario nao encontrado')
         }
     }
 
-    async findWithToken(token: string): Promise<boolean> {
-      const convertedTokenEmail = md5(token);
-      try {
-          await this.connection.one('SELECT * FROM users WHERE email = ${email}', {
-              email: convertedTokenEmail
-          });
-
-          return true
-      } catch(e) {
-          return false
-      }
-
+    async findWithToken(token: string): Promise<User | boolean> {
+        const decryptedToken = CryptoJS.AES.decrypt(token.replace('Bearer', '').trim(), "esgplatform").toString(CryptoJS.enc.Utf8)
+      
+        try {
+            const user = await this.connection.one('SELECT * FROM users WHERE email = ${email}', {
+                email: decryptedToken
+            });
+        
+            return new User(user.nickname, user.name, user.email, user.password, user.id);
+        } catch(e) {
+            return false
+        }
     }
 }

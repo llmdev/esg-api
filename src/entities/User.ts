@@ -6,12 +6,14 @@ export default class User {
     name: String;
     email: String;
     password: String;
+    id?: number;
 
     constructor(
         nickname: string,
         name: string,
         email: string,
-        password: string
+        password?: string,
+        id?: number,
         ) {
         if ( nickname === '' || nickname === undefined ) {
             throw new UserError('Usuario invalido: Nickname obrigatorio')
@@ -25,6 +27,7 @@ export default class User {
         if ( password === '' || password === undefined || password.length < 5 ) {
             throw new UserError('Usuario invalido: Password obrigatorio e/ou precisa ter no minimo 5 caracteres!')
         } else { this.password = md5(password) }
+        this.id = id;
     }
 
 }
