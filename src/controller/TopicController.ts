@@ -32,4 +32,21 @@ export default class TopicController {
       }
     }
   }
+
+  async getTopicsByCategory(req: any, res: Response) {
+    const categoryId = req.params.id;
+    try {
+      const topicsWithCategory = await new TopicDAO(this.connection).getTopicsByCategory(categoryId);
+      res.json({
+        topics: topicsWithCategory
+      })
+    } catch (error) {
+      if( error instanceof TopicError) {
+        res.statusCode = 400;
+        res.json({
+          error: error.message
+        });
+      }
+    }
+  }
 }

@@ -19,4 +19,15 @@ export default class TopicDAO {
             throw new TopicError('Erro ao cadastrar topico!');
         }
     }
+
+    async getTopicsByCategory(id: number) {
+        try {
+            const allTopics = await this.connection.query('SELECT * FROM topics WHERE category = ${id}', {
+                id
+            });
+            return allTopics;
+        } catch (error) {
+            throw new TopicError('Nao encontramos topicos dessa categoria.');
+        }
+    }
 }

@@ -79,6 +79,7 @@ app.post('/login', async (req, res) => {
 
 const topicController = new TopicController(dbConnection);
 app.post('/topic', authMidleware, (req, res) => topicController.createTopic(req, res));
+app.get('/topic/category/:id', authMidleware, (req, res) => topicController.getTopicsByCategory(req, res));
 
 const categoryController = new CategoryController(dbConnection);
 app.get('/categories', (req, res) => categoryController.getAll(req, res));
