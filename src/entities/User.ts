@@ -20,7 +20,7 @@ export default class User {
         } else { this.nickname = nickname }
         if ( name === '' || name === undefined ) {
             throw new UserError('Usuario invalido: Name obrigatorio')
-        } else { this.name = nickname }
+        } else { this.name = name }
         if ( email === '' || email === undefined || !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email) ) {
             throw new UserError('Usuario invalido: Email obrigatorio ou email invalido')
         } else { this.email = email }

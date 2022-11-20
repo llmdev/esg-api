@@ -59,7 +59,7 @@ app.post('/login', async (req, res) => {
             message: 'Usuario encontrado',
             user: {
                 id: findedUser.id,
-                nickname: findedUser.email,
+                nickname: findedUser.nickname,
                 name: findedUser.name,
                 email: findedUser.email,
                 token: CryptoJS.AES.encrypt(findedUser.email, "esgplatform").toString()
