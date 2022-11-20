@@ -33,7 +33,7 @@ export default class TopicDAO {
 
     async find(id: number){
         try {
-            const topic = await this.connection.one('select * from topics t inner join users u ON(u.id = t.user_id) where t.id = ${id}', {
+            const topic = await this.connection.one('select t.id, c.title as title_category, u.nickname, t.title, t."content" from topics t inner join users u ON(u.id = t.user_id) inner join categories c on(c.id = t.category) where t.id = ${id}', {
                 id
             });
             return topic;
