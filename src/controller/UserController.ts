@@ -5,7 +5,8 @@ import CommentDAO from '../DTO/CommentDAO';
 import TopicDAO from '../DTO/TopicDAO';
 
 export default class UserController {
-    private MULTIPLY_POINTS = 1.5
+    private MULTIPLY_POINTS_TOPICS = 1.5
+    private MULTIPLY_POINTS_COMMENTS = 0.5
 
     constructor(private connection: pgp.IDatabase<{}, pg.IClient>) {}
 
@@ -16,7 +17,7 @@ export default class UserController {
             
             res.json({
                 user: req.context.user,
-                points: topicsByUser.length * this.MULTIPLY_POINTS,
+                points: topicsByUser.length * this.MULTIPLY_POINTS_TOPICS + commentsByUser.length * this.MULTIPLY_POINTS_COMMENTS,
                 topics: topicsByUser.length,
                 comments: commentsByUser.length,
             });
