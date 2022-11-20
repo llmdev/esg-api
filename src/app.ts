@@ -9,6 +9,7 @@ import TopicController from './controller/TopicController';
 import CryptoJS from 'crypto-js';
 import CategoryController from './controller/CategoryController';
 import UserController from './controller/UserController';
+import CommentController from './controller/CommentController';
 
 
 dotenv.config()
@@ -89,6 +90,10 @@ app.get('/categories', (req, res) => categoryController.getAll(req, res));
 
 const userController = new UserController(dbConnection);
 app.get('/user', authMidleware, (req, res) => userController.getUserInfo(req, res));
+
+const commentController = new CommentController(dbConnection);
+app.get('/comments/topic/:id', (req, res) => commentController.getByTopic(req, res) )
+app.post('/comments', authMidleware, (req, res) => commentController.createComment(req, res) )
 
 app.listen(process.env.PORT, () => {
     console.log(`Server listen on port ${process.env.PORT} 👌👌!`);
