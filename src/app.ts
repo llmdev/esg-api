@@ -7,6 +7,7 @@ import pgp from 'pg-promise';
 import UserDAO from './DTO/UserDAO';
 import TopicController from './controller/TopicController';
 import CryptoJS from 'crypto-js';
+import CategoryController from './controller/CategoryController';
 
 
 dotenv.config()
@@ -78,6 +79,9 @@ app.post('/login', async (req, res) => {
 
 const topicController = new TopicController(dbConnection);
 app.post('/topic', authMidleware, (req, res) => topicController.createTopic(req, res));
+
+const categoryController = new CategoryController(dbConnection);
+app.get('/categories', authMidleware, (req, res) => categoryController.getAll(req, res));
 
 app.listen(process.env.PORT, () => {
     console.log(`Server listen on port ${process.env.PORT} 👌👌!`);

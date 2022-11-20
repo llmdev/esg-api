@@ -16,4 +16,13 @@ export default class CategoryDAO {
             throw new CategoryError('Categoria nao encontrada')
         }
     }
+
+    async findAll(): Promise<Category[]> {
+        try {
+            const category = await this.connection.query('SELECT * FROM categories');
+            return category as Category[];
+        } catch (error) {
+            throw new CategoryError('Erro ao retornar todas categorias')
+        }
+    }
 }
