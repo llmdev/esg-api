@@ -81,7 +81,7 @@ const topicController = new TopicController(dbConnection);
 app.post('/topic', authMidleware, (req, res) => topicController.createTopic(req, res));
 
 const categoryController = new CategoryController(dbConnection);
-app.get('/categories', authMidleware, (req, res) => categoryController.getAll(req, res));
+app.get('/categories', (req, res) => categoryController.getAll(req, res));
 
 app.listen(process.env.PORT, () => {
     console.log(`Server listen on port ${process.env.PORT} 👌👌!`);
