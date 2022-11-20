@@ -8,6 +8,7 @@ import UserDAO from './DTO/UserDAO';
 import TopicController from './controller/TopicController';
 import CryptoJS from 'crypto-js';
 import CategoryController from './controller/CategoryController';
+import UserController from './controller/UserController';
 
 
 dotenv.config()
@@ -84,6 +85,10 @@ app.get('/topic/:id', (req, res) => topicController.getTopicById(req, res));
 
 const categoryController = new CategoryController(dbConnection);
 app.get('/categories', (req, res) => categoryController.getAll(req, res));
+
+
+const userController = new UserController(dbConnection);
+app.get('/user', authMidleware, (req, res) => userController.getUserInfo(req, res));
 
 app.listen(process.env.PORT, () => {
     console.log(`Server listen on port ${process.env.PORT} 👌👌!`);
