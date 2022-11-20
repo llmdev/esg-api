@@ -49,4 +49,21 @@ export default class TopicController {
       }
     }
   }
+
+  async getTopicById(req: any, res: Response) {
+    const topicId = req.params.id
+    try {
+      const topicdb = await new TopicDAO(this.connection).find(topicId);
+      res.json({
+        topic: topicdb
+      })
+    } catch (error) {
+      if( error instanceof TopicError) {
+        res.statusCode = 400;
+        res.json({
+          error: error.message
+        });
+      }
+    }
+  }
 }

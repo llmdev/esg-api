@@ -30,4 +30,16 @@ export default class TopicDAO {
             throw new TopicError('Nao encontramos topicos dessa categoria.');
         }
     }
+
+    async find(id: number){
+        try {
+            const topic = await this.connection.one('select * from topics t inner join users u ON(u.id = t.user_id) where t.id = ${id}', {
+                id
+            });
+            return topic;
+        } catch (error) {
+            console.log(error)
+            throw new TopicError('Topico nao encontrado');
+        }
+    }
 }
